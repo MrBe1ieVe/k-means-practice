@@ -2,17 +2,24 @@ import math
 import random
 
 class coordinate():
+
     def __init__(self,x,y):
         self.x = x
         self.y = y
         self.distance = []
         self.cluster = []
+        self.centroid_x = 0
+        self.centroid_y = 0
+
     def append_distance(self,distance):
         self.distance.append(distance)
 
     def append_cluster(self,coordinate_):
         self.cluster.append(coordinate_)
     
+    def set_centroid(self , x , y):
+        self.centroid_x = x
+        self.centroid_y = y
 
 def input_coordinate():
     point = []  
@@ -72,7 +79,7 @@ def cal_distance(point , k , num):
             temp = cal_euclidean_distance(coordinate_.x , be_cal.x , coordinate_.y , be_cal.y)
             coordinate_.append_distance(temp)
 
-def clusting(point , random_num):
+def first_clusting(point , random_num):
     for coordinate_ in point:
         min_ = float('inf') #获取float最大值
         for num in random_num:
@@ -80,6 +87,20 @@ def clusting(point , random_num):
                 min_ = num
         point[min_].append_cluster(coordinate_)
     
+def update_centroid(point , random_num):
+    for num in random_num:
+        x_total = 0.0
+        y_total = 0.0
+
+        for coordinate_in_cluster in point[num].cluster:   
+            x_total = coordinate_in_cluster.x + x_total
+            y_total = coordinate_in_cluster.y + y_total
+        
+        x_centroid = x_total / len(point[num].cluster)
+        y_centroid = y_total / len(point[num].cluster)   #求坐标均值，作为质心
+
+        for coordinate_in_cluster in point[num].cluster:
+            coordinate_in_cluster.set_centroid(x_centroid , y_centroid)
 
 def test():
     random_num_list = [1,2,2,3]
@@ -98,8 +119,8 @@ def main():
     point , k , num = input_coordinate()
     random_num = random_num_list(k)
     cal_distance(point , k , num)
-    clusting(point , random_num)
-
+    first_clusting(point , random_num)
+    update_centroid(point , random_num)
     #test()
 
 if __name__ == "__main__":
