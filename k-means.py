@@ -1,5 +1,6 @@
 import math
 import random
+import copy
 
 class coordinate():
 
@@ -35,7 +36,7 @@ class centroid():
         self.cluster = []
 
 def output_centroid_list(centroid_list):
-    print("质点坐标：")
+    print("centroid coordinate:")
     for centroid_ in centroid_list:
             print("(" + str(centroid_.x) + "," + str(centroid_.y) + ")", end=' ')
     print()
@@ -43,9 +44,9 @@ def output_centroid_list(centroid_list):
 
 def output_centroid_cluster(centroid_list):
     for centroid_ in centroid_list:
-        print("质点坐标：")
+        print("centroid coordinate:")
         print("(" + str(centroid_.x) + "," + str(centroid_.y) + ")")
-        print("簇内坐标：")
+        print("the coordinate in cluster:")
         for coordinate_ in centroid_.cluster:
             print("(" + str(int(coordinate_.x)) + "," + str(int(coordinate_.y)) + ")", end=' ')
         print()
@@ -53,16 +54,17 @@ def output_centroid_cluster(centroid_list):
 
 def input_coordinate():     # input the coordinate
     coordinate_list = []  
-    #k = input("输入K值")
-    k = 2
-    #num = 10   #坐标得个数
-    #num = int(input("输入值的个数"))
-    #while(num):
-    #    x = int(input("输入第"+ num + "的x值"))
-    #    y = int(input("输入第"+ num + "的x值"))
-    #    temp = coordinate(x,y)
-    #    coordinate_list.append(temp)
-    #    num = num - 1
+    k = int(input("please input the k.(int) "))
+    #k = 2
+    #num = 10   
+    num = int(input("please input how many coordinates you want to set.(int) "))
+    i = 1
+    while(not i == num+1):
+        x = int(input("please input the x coordinate of x"+ str(i) + "(int) "))
+        y = int(input("please input the y coordinate of x"+ str(i) + "(int) "))
+        temp = coordinate(x,y)
+        coordinate_list.append(temp)
+        i = i + 1
     #coordinate_list.append(coordinate(0,0))
     #coordinate_list.append(coordinate(1,0))
     #coordinate_list.append(coordinate(0,1))
@@ -75,10 +77,10 @@ def input_coordinate():     # input the coordinate
     #coordinate_list.append(coordinate(9,9))
 
     #test data
-    num = 3
-    coordinate_list.append(coordinate(0,0))
-    coordinate_list.append(coordinate(0,1))
-    coordinate_list.append(coordinate(9,9))
+    #num = 3
+    #coordinate_list.append(coordinate(0,0))
+    #coordinate_list.append(coordinate(0,1))
+    #coordinate_list.append(coordinate(9,9))
 
     return coordinate_list , k , num
 
@@ -87,12 +89,12 @@ def pick_random_centroid(coordinate_list, k, num):     # pick out the random coo
     centroid_list = []
     count = k
 
-    #选择随机点并去重
+    #
     while(count):
         pick_random_centroid.append(random.randint(0, num-1))
         count = count - 1
     #pick_random_centroid = [1,1] # test data
-    result = []     #存储随机的坐标index
+    result = []     #store the coordinate index
     for num in pick_random_centroid:
         while(num in result):
             num = random.randint(0, num-1)
@@ -105,9 +107,11 @@ def pick_random_centroid(coordinate_list, k, num):     # pick out the random coo
             continue
         else:
             result.append(num) 
+    #test
+    #result =  [1,0]
 
-    #将坐标赋给centroid
-    print("选取的随机质心为")
+    #set the centroid
+    print("random centroid is")
     for num in result:
         print("(" + str(coordinate_list[num].x) + "," + str(coordinate_list[num].y) + ")")
         x = coordinate_list[num].x
@@ -141,17 +145,24 @@ def fisrt_clusting(coordinate_list, k, num):
     append_cluster_to_centroid(coordinate_list, centroid_list)
     output_centroid_cluster(centroid_list)
     return centroid_list
-    
-        
+
 def update_centroid(coordinate_list, centroid_list):
     centroid_change_flag = True
-    copy_centroid_list = None
+    copy_centroid_list_cluster = []
     while(centroid_change_flag): #while centroid dont change, break
-        if copy_centroid_list == centroid_list:
+        
+        temp = []
+        for centroid_ in centroid_list:
+            temp.append(centroid_.cluster)
+        if copy_centroid_list_cluster == temp:     
             centroid_change_flag = False
             break
-        copy_centroid_list = centroid_list
-        
+        copy_centroid_list_cluster = []
+        for centroid_ in centroid_list:
+            copy_centroid_list_cluster.append(centroid_.cluster)  
+        # because of the deep copy and the shallow copy
+        # so im using centroid coordinate list to check
+
         for centroid_ in centroid_list:
             x_total = 0.0
             y_total = 0.0
@@ -171,9 +182,8 @@ def update_centroid(coordinate_list, centroid_list):
         cal_coordinate_distance(coordinate_list, centroid_list)
         append_cluster_to_centroid(coordinate_list, centroid_list)
         
-        output_centroid_list(centroid_list)
-        
-    pass
+        output_centroid_cluster(centroid_list)
+
 
 
 
@@ -182,7 +192,8 @@ def main():
     coordinate_list , k , num = input_coordinate()
     centroid_list = fisrt_clusting(coordinate_list, k, num)
     update_centroid(coordinate_list, centroid_list)
-    print("最终结果：")
+    print("Final Result：")
+    print()
     output_centroid_cluster(centroid_list)
 
 """
