@@ -8,9 +8,7 @@ class coordinate():
         self.x = x  #坐标x
         self.y = y  #坐标y
         self.distance = []
-        """
-        first clustering the distance store the distance between the centroid
-        """
+        
 
     def append_distance(self, distance):
         self.distance.append(distance)
